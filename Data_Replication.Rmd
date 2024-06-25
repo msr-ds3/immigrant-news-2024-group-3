@@ -18,9 +18,9 @@ Set 1 - Reporting
 Set 2 - Crime
 Set 3 - Welfare
 ```{r}
-reporting_data <- read_csv("Google_Trends_Set_1.csv") 
-crime_data <- read_csv("Google_Trends_Set_2.csv") 
-welfare_data <- read_csv("Google_Trends_Set_3.csv") 
+reporting_data <- read_csv("Google_Trends_Immigrant_Reporting.csv") 
+crime_data <- read_csv("Google_Trends_Immigrant_Crime.csv") 
+welfare_data <- read_csv("Google_Trends_Immigrant_Welfare.csv") 
 
 
 reporting_data <- 
