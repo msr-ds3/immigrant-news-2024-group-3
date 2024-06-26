@@ -1,22 +1,26 @@
 ---
 title: "Data_Replication"
-output: html_document
+output: 
+  html_document:
+    toc: yes
 date: "2024-06-24"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 library(ggplot2)
 library(tidyverse)
+library(stargazer)
+
+theme_set(theme_bw())
 ```
 
-## R Markdown
+# Description
+Replicated figure 4, table 3, figures 2 and 3, and table 4 from https://static1.squarespace.com/static/5ac4569925bf02b3f05a651f/t/638b509cb141756009541e29/1670074524751/Immigration_Paper_V2-1.pdf using only google trends data (without the bing portion)
 
-Download Google Trends Data + Format
+# Download Google Trends Data + Format
 
-Set 1 - Reporting
-Set 2 - Crime
-Set 3 - Welfare
 ```{r}
 reporting_data <- read_csv("Google_Trends_Immigrant_Reporting.csv") 
 crime_data <- read_csv("Google_Trends_Immigrant_Crime.csv") 
@@ -60,7 +64,7 @@ welfare_data <-
 ```
 
 
-Figure 4 Recreation
+# Figure 4
 ```{r}
 reporting_data %>%
   ggplot(aes(x=date, y=Num_Searches, color=President)) +
@@ -80,7 +84,9 @@ welfare_data %>%
   
 
 ```
-Table 3 Recreation
+
+# Table 3 
+
 ```{r}
 reporting_data <- 
   reporting_data %>%
@@ -97,45 +103,23 @@ welfare_data <-
 ```
 
 ```{r}
-library(modelsummary)
 reporting_model <- lm(Num_Searches ~ date + Is_Bush + Is_Trump + Is_Obama , data=reporting_data)
 crime_model <- lm(Num_Searches ~ date + Is_Bush + Is_Trump + Is_Obama , data=crime_data)
 welfare_model <- lm(Num_Searches ~ date + Is_Bush + Is_Trump + Is_Obama , data=welfare_data)
 
-modelsummary(list("Crime" = crime_model, "Welfare" = welfare_model, "Report"=reporting_model), output="markdown")
-
-
-
+stargazer(crime_model, welfare_model, reporting_model, type = "text",
+          column.labels = c("Crime", "Welfare", "Report"))
 
 ```
-Compare to our previous plots (Figure 4 vs Table 3)
-Note: Dotted lines are new predictions (from table 3)
-```{r}
-reporting_data %>%
-  ggplot(aes(x=date, y=Num_Searches, color=President)) +
-  geom_point() +
-  geom_smooth(method = "lm", se=F) + 
-  geom_line(aes(y=predict(reporting_model, reporting_data), x=date), linetype="dotted")
 
-crime_data %>%
-  ggplot(aes(x=date, y=Num_Searches, color=President)) +
-  geom_point() +
-  geom_smooth(method = "lm", se=F) +
-  geom_line(aes(y=predict(crime_model, crime_data), x=date), linetype="dotted")
+We obtained different results than the paper due to differences in our data downloaded from google trends.
+When given the exact data the paper used, we obtained their results
 
-
-welfare_data %>%
-  ggplot(aes(x=date, y=Num_Searches, color=President)) +
-  geom_point() +
-  geom_smooth(method = "lm", se=F) +
-  geom_line(aes(y=predict(welfare_model, welfare_data), x=date), linetype="dotted")
-
-
-```
-Recreating Figures 2+3
+# Figures 2+3
 
 Topics 1+3 for Crime
 Topics 13 for Welfare
+
 ```{r}
 library(stm)
 load("TopicModel.RData")
@@ -144,11 +128,9 @@ topic_terms <- t(exp(immigrFit$beta$logbeta[[1]]))
 rownames(topic_terms) <- out$vocab
 colnames(topic_terms) <- sprintf("Topic%d", 1:ncol(topic_terms))
 ```
-```{r}
 
-  
-  
-```
+Topic Model was given to us
+
 ```{r}
 line_data <- 
   document_topics %>%
@@ -173,10 +155,10 @@ document_topics %>%
   select(Topic1, Topic3, date, channel, time) %>%
   mutate(month = floor_date(ymd(date), "month")) %>%
   group_by(month, channel, time) %>%
-  summarize(prop_total = sum(Topic1, Topic3)) %>%
-  ggplot(aes(x=month, y=prop_total, color=channel)) +
+  summarize(crime_prop = sum(Topic1, Topic3)) %>%
+  ggplot(aes(x = month, y = crime_prop, color = channel)) +
   geom_point() +
-  geom_smooth(aes(group=interaction(channel, time)), se=F) + 
+  geom_smooth(aes(group = interaction(channel, time)), se = F) + 
   scale_color_manual(values = c("magenta", "red3", "blue")) + 
   geom_vline(data=line_data, aes(xintercept = line_date), linetype = "dashed")
 
@@ -186,8 +168,8 @@ document_topics %>%
   select(Topic13, date, channel, time) %>%
   mutate(month = floor_date(ymd(date), "month")) %>%
   group_by(month, channel, time) %>%
-  summarize(prop_total = sum(Topic13)) %>%
-  ggplot(aes(x=month, y=prop_total, color=channel)) +
+  summarize(welfare_prop = sum(Topic13)) %>%
+  ggplot(aes(x = month, y = welfare_prop, color = channel)) +
   geom_point() +
   geom_smooth(aes(group=interaction(channel, time)), se=F) + 
   scale_color_manual(values = c("magenta", "red3", "blue")) + 
@@ -195,7 +177,11 @@ document_topics %>%
   
   
 ```
-Recreate Table 4
+
+# Table 4
+
+this model does not include the daily data
+
 ```{r}
 Segment_Info <- 
   document_topics %>%
@@ -205,24 +191,16 @@ Segment_Info <-
   mutate(month_of_year = month(month)) %>%
   inner_join(reporting_data, join_by(month == date)) 
 
-
-
 table_4_model <- lm(Num_Searches ~ num_segments + welfare_prop + crime_prop + Is_Trump + month + month_of_year, data=Segment_Info)
 
 
-modelsummary(table_4_model, output="markdown")
-
-  
-
-
-
-
-  
-  
+stargazer(table_4_model, type = "text")
 ```
+
+This model does include the daily data
+
 ```{r}
 daily_info <- read_csv("gt_report_daily.csv")
-
 
 Segment_Info_Daily <- 
   document_topics %>%
@@ -235,7 +213,7 @@ Segment_Info_Daily <-
 
 table_4_model_daily <- lm(search_adj ~ num_segments + welfare_prop + crime_prop + Is_Trump + date + month_of_year + day_of_week, data=Segment_Info_Daily)
 
-
+stargazer(table_4_model_daily, type = "text")
 ```
 
 
