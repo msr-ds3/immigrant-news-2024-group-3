@@ -163,7 +163,7 @@ document_topics %>%
   ggplot(aes(x=month, y=num_segments, color=channel)) +
   geom_point() +
   geom_smooth(aes(group=interaction(channel, time)), se=F) + 
-  scale_color_manual(values = c("magenta", "red", "blue")) + 
+  scale_color_manual(values = c("magenta", "red3", "blue")) + 
   geom_vline(data=line_data, aes(xintercept = line_date), linetype = "dashed")
   
 ```
@@ -177,7 +177,7 @@ document_topics %>%
   ggplot(aes(x=month, y=prop_total, color=channel)) +
   geom_point() +
   geom_smooth(aes(group=interaction(channel, time)), se=F) + 
-  scale_color_manual(values = c("magenta", "red", "blue")) + 
+  scale_color_manual(values = c("magenta", "red3", "blue")) + 
   geom_vline(data=line_data, aes(xintercept = line_date), linetype = "dashed")
 
 
@@ -190,7 +190,7 @@ document_topics %>%
   ggplot(aes(x=month, y=prop_total, color=channel)) +
   geom_point() +
   geom_smooth(aes(group=interaction(channel, time)), se=F) + 
-  scale_color_manual(values = c("magenta", "red", "blue")) + 
+  scale_color_manual(values = c("magenta", "red3", "blue")) + 
   geom_vline(data=line_data, aes(xintercept = line_date), linetype = "dashed")
   
   
@@ -200,14 +200,14 @@ Recreate Table 4
 Segment_Info <- 
   document_topics %>%
   mutate(month = floor_date(ymd(date), "month")) %>%
-  group_by(month, channel, time, trump) %>%
-  summarize(num_segments = n(), welfare_prop = sum(Topic13), crime_prop = sum(Topic1, Topic3), day_of_week = wday(date), month_of_year = month(date)) %>%
-  inner_join(reporting_data, join_by(month == date)) %>%
-  distinct()
+  group_by(month, channel, time) %>%
+  summarize(num_segments = n(), welfare_prop = sum(Topic13), crime_prop = sum(Topic1, Topic3)) %>%
+  mutate(month_of_year = month(month)) %>%
+  inner_join(reporting_data, join_by(month == date)) 
 
 
 
-table_4_model <- lm(Num_Searches ~ num_segments + welfare_prop, crime_prop + trump, data=Segment_Info)
+table_4_model <- lm(Num_Searches ~ num_segments + welfare_prop + crime_prop + Is_Trump + month + month_of_year, data=Segment_Info)
 
 
 modelsummary(table_4_model, output="markdown")
@@ -219,6 +219,23 @@ modelsummary(table_4_model, output="markdown")
 
   
   
+```
+```{r}
+daily_info <- read_csv("gt_report_daily.csv")
+
+
+Segment_Info_Daily <- 
+  document_topics %>%
+  mutate(Is_Trump = (date >= "2017-01-20")) %>%
+  group_by(date, channel, time, Is_Trump) %>%
+  mutate(date = as.Date(date, "%Y-%m-%d")) %>%
+  summarize(num_segments = n(), welfare_prop = sum(Topic13), crime_prop = sum(Topic1, Topic3)) %>%
+  mutate(month_of_year = as.factor(month(date)), day_of_week = as.factor(wday(date))) %>%
+  inner_join(daily_info, join_by(date == date)) 
+
+table_4_model_daily <- lm(search_adj ~ num_segments + welfare_prop + crime_prop + Is_Trump + date + month_of_year + day_of_week, data=Segment_Info_Daily)
+
+
 ```
 
 
