@@ -1,5 +1,6 @@
 ---
 title: "Data_Replication"
+Author: "Salma Ghazi, Shana Mandelbaum"
 output: 
   html_document:
     toc: yes
@@ -19,7 +20,9 @@ theme_set(theme_bw())
 # Description
 Replicated figure 4, table 3, figures 2 and 3, and table 4 from https://static1.squarespace.com/static/5ac4569925bf02b3f05a651f/t/638b509cb141756009541e29/1670074524751/Immigration_Paper_V2-1.pdf using only google trends data (without the bing portion)
 
-# Download Google Trends Data + Format
+# Replication
+
+## Download Google Trends Data + Format
 
 ```{r}
 reporting_data <- read_csv("Google_Trends_Immigrant_Reporting.csv") 
@@ -29,22 +32,25 @@ welfare_data <- read_csv("Google_Trends_Immigrant_Welfare.csv")
 
 reporting_data <- 
   reporting_data %>% 
+  rename(search_interest = Num_Searches) %>%
   mutate(date=parse_date(Month, "%Y-%m")) %>%
   filter(year(date) < 2020)
 
 
 crime_data <- 
   crime_data %>% 
+  rename(search_interest = Num_Searches) %>%
   mutate(date=parse_date(Month, "%Y-%m")) %>%
   filter(year(date) < 2020) %>%
-  filter(Num_Searches != 0)
+  filter(search_interest != 0)
 
 
 welfare_data <- 
   welfare_data %>% 
+  rename(search_interest = Num_Searches) %>%
   mutate(date=parse_date(Month, "%Y-%m")) %>%
   filter(year(date) < 2020) %>%
-  filter(Num_Searches != 0)
+  filter(search_interest != 0)
 
 ```
 
@@ -64,28 +70,28 @@ welfare_data <-
 ```
 
 
-# Figure 4
+## Figure 4
 ```{r}
 reporting_data %>%
-  ggplot(aes(x=date, y=Num_Searches, color=President)) +
+  ggplot(aes(x = date, y = search_interest, color = President)) +
   geom_point() +
-  geom_smooth(method = "lm", se=F)
+  geom_smooth(method = "lm", se = F)
 
 crime_data %>%
-  ggplot(aes(x=date, y=Num_Searches, color=President)) +
+  ggplot(aes(x = date, y = search_interest, color = President)) +
   geom_point() +
-  geom_smooth(method = "lm", se=F)
+  geom_smooth(method = "lm", se = F)
 
 
 welfare_data %>%
-  ggplot(aes(x=date, y=Num_Searches, color=President)) +
+  ggplot(aes(x = date, y = search_interest, color = President)) +
   geom_point() +
   geom_smooth(method = "lm", se=F)
   
 
 ```
 
-# Table 3 
+## Table 3 
 
 ```{r}
 reporting_data <- 
@@ -103,9 +109,9 @@ welfare_data <-
 ```
 
 ```{r}
-reporting_model <- lm(Num_Searches ~ date + Is_Bush + Is_Trump + Is_Obama , data=reporting_data)
-crime_model <- lm(Num_Searches ~ date + Is_Bush + Is_Trump + Is_Obama , data=crime_data)
-welfare_model <- lm(Num_Searches ~ date + Is_Bush + Is_Trump + Is_Obama , data=welfare_data)
+reporting_model <- lm(search_interest ~ date + Is_Bush + Is_Trump + Is_Obama , data=reporting_data)
+crime_model <- lm(search_interest ~ date + Is_Bush + Is_Trump + Is_Obama , data=crime_data)
+welfare_model <- lm(search_interest ~ date + Is_Bush + Is_Trump + Is_Obama , data=welfare_data)
 
 stargazer(crime_model, welfare_model, reporting_model, type = "text",
           column.labels = c("Crime", "Welfare", "Report"))
@@ -115,7 +121,7 @@ stargazer(crime_model, welfare_model, reporting_model, type = "text",
 We obtained different results than the paper due to differences in our data downloaded from google trends.
 When given the exact data the paper used, we obtained their results
 
-# Figures 2+3
+## Figures 2+3
 
 Topics 1+3 for Crime
 Topics 13 for Welfare
@@ -142,11 +148,11 @@ document_topics %>%
   mutate(month = floor_date(ymd(date), "month")) %>%
   group_by(month, channel, time) %>%
   summarize(num_segments = n()) %>%
-  ggplot(aes(x=month, y=num_segments, color=channel)) +
+  ggplot(aes(x = month, y = num_segments, color = channel)) +
   geom_point() +
-  geom_smooth(aes(group=interaction(channel, time)), se=F) + 
+  geom_smooth(aes(group = interaction(channel, time)), se = F) + 
   scale_color_manual(values = c("magenta", "red3", "blue")) + 
-  geom_vline(data=line_data, aes(xintercept = line_date), linetype = "dashed")
+  geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed")
   
 ```
 ```{r}
@@ -170,15 +176,15 @@ document_topics %>%
   group_by(month, channel, time) %>%
   summarize(welfare_prop = sum(Topic13)) %>%
   ggplot(aes(x = month, y = welfare_prop, color = channel)) +
-  geom_point() +
-  geom_smooth(aes(group=interaction(channel, time)), se=F) + 
+  geom_point() + 
+  geom_smooth(aes(group = interaction(channel, time)), se=F) + 
   scale_color_manual(values = c("magenta", "red3", "blue")) + 
-  geom_vline(data=line_data, aes(xintercept = line_date), linetype = "dashed")
+  geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed")
   
   
 ```
 
-# Table 4
+## Table 4
 
 this model does not include the daily data
 
@@ -191,7 +197,7 @@ Segment_Info <-
   mutate(month_of_year = month(month)) %>%
   inner_join(reporting_data, join_by(month == date)) 
 
-table_4_model <- lm(Num_Searches ~ num_segments + welfare_prop + crime_prop + Is_Trump + month + month_of_year, data=Segment_Info)
+table_4_model <- lm(search_interest ~ num_segments + welfare_prop + crime_prop + Is_Trump + month + month_of_year, data=Segment_Info)
 
 
 stargazer(table_4_model, type = "text")
@@ -215,5 +221,41 @@ table_4_model_daily <- lm(search_adj ~ num_segments + welfare_prop + crime_prop 
 
 stargazer(table_4_model_daily, type = "text")
 ```
+# Extension
 
+We decided to examine this claim in the paper: "While there was a significant increase in negative coverage of immigrants after Trump’s inauguration, the Trump administration also engaged in substantial anti-immigrant messaging and policy initiatives"
+To do this, we are looking at the association between media coverage of the border crisis and data of how many people were apprehended or expelled at the Mexican border.
+
+## Download Border Data
+```{r}
+border_migrant_data <- read_csv("border_migrant_data.csv")
+```
+## Graph border apprehensions over time
+```{r}
+border_migrant_data <- border_migrant_data %>%  
+  mutate(date = parse_date(Date, "%Y-%m")) %>% 
+  mutate(president = ifelse(year(date) < 2017, "Obama", "Trump"))
+
+border_migrant_data %>% 
+  ggplot(aes(x = date, y = Number, color = president)) + 
+  geom_point() +
+  geom_smooth(se = F)
+```
+
+## Media Coverage Graph
+
+We are looking at Topic 6 as this is the topic that discusses the Mexican border crisis.
+
+```{r}
+document_topics %>% 
+  mutate(month = floor_date(ymd(date), "month")) %>%  
+  group_by(time, channel, month) %>% 
+  summarise(border_prop = sum(Topic6)) %>% 
+  ggplot(aes(x = month, y = border_prop, color = channel)) +
+  geom_point() + 
+  geom_smooth(aes(group = interaction(channel, time)), se = F) +
+  scale_color_manual(values = c("magenta", "red3", "blue")) +
+  geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed")
+```
+We can conclude from this that during the Trump administration the number of people being apprehended and expelled at the border increased, as did media coverage of the Mexican border crisis
 
