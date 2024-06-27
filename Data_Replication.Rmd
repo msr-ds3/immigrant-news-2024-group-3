@@ -1,5 +1,5 @@
 ---
-title: "Data_Replication"
+title: "Data Replication Project"
 Author: "Salma Ghazi, Shana Mandelbaum"
 output: 
   html_document:
@@ -257,5 +257,5 @@ document_topics %>%
   scale_color_manual(values = c("magenta", "red3", "blue")) +
   geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed")
 ```
-We can conclude from this that during the Trump administration the number of people being apprehended and expelled at the border increased, as did media coverage of the Mexican border crisis
 
+We can conclude from this that during the Trump administration the number of people being apprehended and expelled at the border increased, as did media coverage of the Mexican border crisis
