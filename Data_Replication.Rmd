@@ -226,7 +226,7 @@ stargazer(table_4_model_daily, type = "text")
 ```
 # Extension
 
-We are looking at the correlation between media coverage of the Mexican border crisis and migrants being apprehended and expelled at the border from 2014-2019.
+We are looking at the correlation between media coverage of the Mexican border crisis and migrants being apprehended and expelled at the border during the time period of 2014-2019.
 
 ## Download Border Data
 ```{r}
@@ -300,6 +300,8 @@ ggplot() +
     axis.text.y.right = element_text(color = "blue"),
     axis.ticks.y.right = element_line(color = "blue"))
 ```
+
+We expected to see an obvious correlation between the number of migrants apprehended at the border and media coverage, but it seems to be the opposite.
 
 ## Regression
 
