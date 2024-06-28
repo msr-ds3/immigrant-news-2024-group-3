@@ -75,18 +75,21 @@ welfare_data <-
 reporting_data %>%
   ggplot(aes(x = date, y = search_interest, color = President)) +
   geom_point() +
-  geom_smooth(method = "lm", se = F)
+  geom_smooth(method = "lm", se = F) +
+  labs(x = "Date", y = "Reporting Search Interest")
 
 crime_data %>%
   ggplot(aes(x = date, y = search_interest, color = President)) +
   geom_point() +
-  geom_smooth(method = "lm", se = F)
+  geom_smooth(method = "lm", se = F) +
+  labs(x = "Date", y = "Crime Search Interest")
 
 
 welfare_data %>%
   ggplot(aes(x = date, y = search_interest, color = President)) +
   geom_point() +
-  geom_smooth(method = "lm", se=F)
+  geom_smooth(method = "lm", se=F) +
+  labs(x = "Date", y = "Welfare Search Interest")
   
 
 ```
@@ -152,7 +155,8 @@ document_topics %>%
   geom_point() +
   geom_smooth(aes(group = interaction(channel, time)), se = F) + 
   scale_color_manual(values = c("magenta", "red3", "blue")) + 
-  geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed")
+  geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed") +
+  labs(x = "Date", y = "Number of News Segments")
   
 ```
 ```{r}
@@ -166,7 +170,8 @@ document_topics %>%
   geom_point() +
   geom_smooth(aes(group = interaction(channel, time)), se = F) + 
   scale_color_manual(values = c("magenta", "red3", "blue")) + 
-  geom_vline(data=line_data, aes(xintercept = line_date), linetype = "dashed")
+  geom_vline(data=line_data, aes(xintercept = line_date), linetype = "dashed") +
+  labs(x = "Date", y = "Crime Proportion")
 
 
 #Welfare Plot
@@ -179,7 +184,8 @@ document_topics %>%
   geom_point() + 
   geom_smooth(aes(group = interaction(channel, time)), se=F) + 
   scale_color_manual(values = c("magenta", "red3", "blue")) + 
-  geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed")
+  geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed") +
+  labs(x = "Date", y = "Welfare Proportion")
   
   
 ```
@@ -230,7 +236,7 @@ To do this, we are looking at the association between media coverage of the bord
 ```{r}
 border_migrant_data <- read_csv("border_migrant_data.csv")
 ```
-## Graph border apprehensions over time
+## Graph Border Apprehensions Over Time
 ```{r}
 border_migrant_data <- border_migrant_data %>%  
   mutate(date = parse_date(Date, "%Y-%m")) %>% 
@@ -239,7 +245,8 @@ border_migrant_data <- border_migrant_data %>%
 border_migrant_data %>% 
   ggplot(aes(x = date, y = Number, color = president)) + 
   geom_point() +
-  geom_smooth(se = F)
+  geom_smooth(se = F) + 
+  labs(x = "Date", y = "Immigrants at Border")
 ```
 
 ## Media Coverage Graph
@@ -255,14 +262,13 @@ document_topics %>%
   geom_point() + 
   geom_smooth(aes(group = interaction(channel, time)), se = F) +
   scale_color_manual(values = c("magenta", "red3", "blue")) +
-  geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed")
-```
-```{r}
-
+  geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed") + 
+  labs(x = "Date", y = "Border Proportion")
 ```
 
 We can conclude from this that during the Trump administration the number of people being apprehended and expelled at the border increased, as did media coverage of the Mexican border crisis
 
+## Graphs Mapped Together
 
 ```{r}
 migrant_plot_data <- border_migrant_data
@@ -283,9 +289,9 @@ ggplot() +
   geom_smooth(data = documents_plot_data, aes(x = month, y = border_prop * 1500, group = time), se = FALSE, inherit.aes = FALSE) +
   geom_vline(data = line_plot_data, aes(xintercept = line_date), linetype = "dashed") +
   scale_y_continuous(
-    name = "Number",
+    name = "Immigrants at Border",
     limits = c(0, 150000),
-    sec.axis = sec_axis(~./1500, name = "Border Prop")
+    sec.axis = sec_axis(~./1500, name = "Border Proportion")
   ) +
   theme_minimal() + 
   theme(
@@ -294,6 +300,9 @@ ggplot() +
     axis.ticks.y.right = element_line(color = "blue"))
 ```
 
+## Regression
+
+We did a regression to see if the proportion of times the border crisis was mentioned on the number of immigrants being apprehended on the border and the presidential administration.
 
 ```{r}
 migrant_model_info <- document_topics %>% 
@@ -307,5 +316,6 @@ migrant_model_info <- document_topics %>%
 migrant_model <- lm(border_prop ~ Is_Trump + Number, data = migrant_model_info)
 stargazer(migrant_model, type = "text", digits = 8)
 ```
-Although we expected the number of immigrants apprehended at the border to have a larger effect than it did on the porportion of times the media discussed immigration at the border, this was not present in our regression. 
+
+Although we expected the number of immigrants apprehended at the border to have a larger effect than it did on the proportion of times the media discussed immigration at the border, this was not present in our regression. 
 
