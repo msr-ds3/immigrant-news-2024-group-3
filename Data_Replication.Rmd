@@ -257,5 +257,41 @@ document_topics %>%
   scale_color_manual(values = c("magenta", "red3", "blue")) +
   geom_vline(data = line_data, aes(xintercept = line_date), linetype = "dashed")
 ```
+```{r}
+
+```
 
 We can conclude from this that during the Trump administration the number of people being apprehended and expelled at the border increased, as did media coverage of the Mexican border crisis
+
+
+```{r}
+migrant_plot_data <- migrant_data
+documents_plot_data <- document_topics %>% 
+  filter(channel == "fox") %>% 
+  mutate(month = floor_date(ymd(date), "month")) %>% 
+  mutate(time = ifelse(date <= "2017-01-01", "pre", "post")) %>% 
+  group_by(time, channel, month) %>% 
+  summarise(border_prop = sum(Topic6))
+ 
+line_plot_data <- line_data %>% 
+  filter(line_date == "2017-01-01")
+ 
+ggplot() +
+  geom_point(data = migrant_plot_data, aes(x = date, y = Number, color = president)) +
+  geom_smooth(data = migrant_plot_data, aes(x = date, y = Number, color = president), se = FALSE) +
+  scale_y_continuous(name = "Number", limits = c(0, 150000)) +
+  geom_smooth(data = documents_plot_data, aes(x = month, y = border_prop * 1500, group = time), se = FALSE, inherit.aes = FALSE) +
+  geom_vline(data = line_plot_data, aes(xintercept = line_date), linetype = "dashed") +
+  scale_y_continuous(
+    name = "Number",
+    limits = c(0, 150000),
+    sec.axis = sec_axis(~./1500, name = "Border Prop")
+  ) +
+  theme_minimal() + 
+  theme(
+    axis.title.y.right = element_text(color = "blue"),
+    axis.text.y.right = element_text(color = "blue"),
+    axis.ticks.y.right = element_line(color = "blue"))
+
+```
+
