@@ -4,6 +4,7 @@ Author: "Salma Ghazi, Shana Mandelbaum"
 output: 
   html_document:
     toc: yes
+    code_folding: hide
 date: "2024-06-24"
 ---
 
@@ -13,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(tidyverse)
 library(stargazer)
+library(stm)
 
 theme_set(theme_bw())
 ```
@@ -130,7 +132,6 @@ Topics 1+3 for Crime
 Topics 13 for Welfare
 
 ```{r}
-library(stm)
 load("TopicModel.RData")
 document_topics <- make.dt(immigrFit, meta = out$meta)
 topic_terms <- t(exp(immigrFit$beta$logbeta[[1]]))
@@ -229,8 +230,7 @@ stargazer(table_4_model_daily, type = "text")
 ```
 # Extension
 
-We decided to examine this claim in the paper: "While there was a significant increase in negative coverage of immigrants after Trump’s inauguration, the Trump administration also engaged in substantial anti-immigrant messaging and policy initiatives"
-To do this, we are looking at the association between media coverage of the border crisis and data of how many people were apprehended or expelled at the Mexican border.
+We are looking at the correlation between media coverage of the Mexican border crisis and migrants being apprehended and expelled at the border from 2014-2019.
 
 ## Download Border Data
 ```{r}
@@ -271,7 +271,8 @@ We can conclude from this that during the Trump administration the number of peo
 ## Graphs Mapped Together
 
 ```{r}
-migrant_plot_data <- border_migrant_data
+migrant_plot_data <- border_migrant_data %>% 
+  filter(year(date) < 2020)
 documents_plot_data <- document_topics %>% 
   filter(channel == "fox") %>% 
   mutate(month = floor_date(ymd(date), "month")) %>% 
@@ -284,14 +285,18 @@ line_plot_data <- line_data %>%
  
 ggplot() +
   geom_point(data = migrant_plot_data, aes(x = date, y = Number, color = president)) +
-  geom_smooth(data = migrant_plot_data, aes(x = date, y = Number, color = president), se = FALSE) +
+  geom_smooth(data = migrant_plot_data, aes(x = date, y = Number, color = president), 
+              se = FALSE) +
   scale_y_continuous(name = "Number", limits = c(0, 150000)) +
-  geom_smooth(data = documents_plot_data, aes(x = month, y = border_prop * 1500, group = time), se = FALSE, inherit.aes = FALSE) +
+  geom_point(data = documents_plot_data,  aes(x = month, y = border_prop * 1500, group = time), 
+             color = "blue") +
+  geom_smooth(data = documents_plot_data, aes(x = month, y = border_prop * 1500, group = time), 
+              se = FALSE, inherit.aes = FALSE) +
   geom_vline(data = line_plot_data, aes(xintercept = line_date), linetype = "dashed") +
   scale_y_continuous(
     name = "Immigrants at Border",
     limits = c(0, 150000),
-    sec.axis = sec_axis(~./1500, name = "Border Proportion")
+    sec.axis = sec_axis(~./1500, name = "Border Proportion (Fox News)")
   ) +
   theme_minimal() + 
   theme(
