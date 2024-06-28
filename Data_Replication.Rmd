@@ -132,11 +132,7 @@ Topics 1+3 for Crime
 Topics 13 for Welfare
 
 ```{r}
-load("TopicModel.RData")
-document_topics <- make.dt(immigrFit, meta = out$meta)
-topic_terms <- t(exp(immigrFit$beta$logbeta[[1]]))
-rownames(topic_terms) <- out$vocab
-colnames(topic_terms) <- sprintf("Topic%d", 1:ncol(topic_terms))
+load("topic_model_lite.RData")
 ```
 
 Topic Model was given to us
