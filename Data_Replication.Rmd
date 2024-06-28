@@ -265,7 +265,7 @@ We can conclude from this that during the Trump administration the number of peo
 
 
 ```{r}
-migrant_plot_data <- migrant_data
+migrant_plot_data <- border_migrant_data
 documents_plot_data <- document_topics %>% 
   filter(channel == "fox") %>% 
   mutate(month = floor_date(ymd(date), "month")) %>% 
@@ -292,6 +292,20 @@ ggplot() +
     axis.title.y.right = element_text(color = "blue"),
     axis.text.y.right = element_text(color = "blue"),
     axis.ticks.y.right = element_line(color = "blue"))
-
 ```
+
+
+```{r}
+migrant_model_info <- document_topics %>% 
+  mutate(Is_Trump = (date >= "2017-01-20")) %>% 
+  group_by(channel, date, Is_Trump) %>% 
+  mutate(date = as.Date(date, "%Y-%m-%d")) %>%  
+  summarise(num_segs = n(), border_prop = sum(Topic6)) %>%  
+  mutate(month_of_year = as.factor(month(date))) %>% 
+  inner_join(border_migrant_data, join_by(date == date))
+ 
+migrant_model <- lm(border_prop ~ Is_Trump + Number, data = migrant_model_info)
+stargazer(migrant_model, type = "text", digits = 8)
+```
+Although we expected the number of immigrants apprehended at the border to have a larger effect than it did on the porportion of times the media discussed immigration at the border, this was not present in our regression. 
 
