@@ -617,11 +617,7 @@ paper used, we obtained their results</p>
 <div id="figures-23" class="section level2">
 <h2>Figures 2+3</h2>
 <p>Topics 1+3 for Crime Topics 13 for Welfare</p>
-<pre class="r"><code>load(&quot;TopicModel.RData&quot;)
-document_topics &lt;- make.dt(immigrFit, meta = out$meta)
-topic_terms &lt;- t(exp(immigrFit$beta$logbeta[[1]]))
-rownames(topic_terms) &lt;- out$vocab
-colnames(topic_terms) &lt;- sprintf(&quot;Topic%d&quot;, 1:ncol(topic_terms))</code></pre>
+<pre class="r"><code>load(&quot;topic_model_lite.RData&quot;)</code></pre>
 <p>Topic Model was given to us</p>
 <pre class="r"><code>line_data &lt;- 
   document_topics %&gt;%
