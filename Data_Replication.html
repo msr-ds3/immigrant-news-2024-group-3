@@ -9,6 +9,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
+<meta name="author" content="Salma Ghazi, Shana Mandelbaum" />
 
 <meta name="date" content="2024-06-24" />
 
@@ -438,6 +439,7 @@ display: none;
 
 
 <h1 class="title toc-ignore">Data Replication Project</h1>
+<h4 class="author">Salma Ghazi, Shana Mandelbaum</h4>
 <h4 class="date">2024-06-24</h4>
 
 </div>
@@ -476,7 +478,7 @@ using only google trends data (without the bing portion)</p>
 <h1>Replication</h1>
 <div id="download-google-trends-data-format" class="section level2">
 <h2>Download Google Trends Data + Format</h2>
-<pre class="r"><code>reporting_data &lt;- read_csv(&quot;Google_Trends_Immigrant_Reporting.csv&quot;) </code></pre>
+<pre class="r"><code>reporting_data &lt;- read_csv(&quot;data/Google_Trends_Immigrant_Reporting.csv&quot;) </code></pre>
 <pre><code>## Rows: 204 Columns: 2
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -485,7 +487,7 @@ using only google trends data (without the bing portion)</p>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>crime_data &lt;- read_csv(&quot;Google_Trends_Immigrant_Crime.csv&quot;) </code></pre>
+<pre class="r"><code>crime_data &lt;- read_csv(&quot;data/Google_Trends_Immigrant_Crime.csv&quot;) </code></pre>
 <pre><code>## Rows: 204 Columns: 2
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -494,7 +496,7 @@ using only google trends data (without the bing portion)</p>
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>welfare_data &lt;- read_csv(&quot;Google_Trends_Immigrant_Welfare.csv&quot;) </code></pre>
+<pre class="r"><code>welfare_data &lt;- read_csv(&quot;data/Google_Trends_Immigrant_Welfare.csv&quot;) </code></pre>
 <pre><code>## Rows: 204 Columns: 2
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
@@ -724,7 +726,7 @@ stargazer(table_4_model, type = &quot;text&quot;)</code></pre>
 ## ===============================================
 ## Note:               *p&lt;0.1; **p&lt;0.05; ***p&lt;0.01</code></pre>
 <p>This model does include the daily data</p>
-<pre class="r"><code>daily_info &lt;- read_csv(&quot;gt_report_daily.csv&quot;)</code></pre>
+<pre class="r"><code>daily_info &lt;- read_csv(&quot;data/gt_report_daily.csv&quot;)</code></pre>
 <pre><code>## New names:
 ## Rows: 5751 Columns: 4
 ## ── Column specification
@@ -838,7 +840,7 @@ Mexican border crisis and migrants being apprehended and expelled at the
 border during the time period of 2014-2019.</p>
 <div id="download-border-data" class="section level2">
 <h2>Download Border Data</h2>
-<pre class="r"><code>border_migrant_data &lt;- read_csv(&quot;border_migrant_data.csv&quot;)</code></pre>
+<pre class="r"><code>border_migrant_data &lt;- read_csv(&quot;data/border_migrant_data.csv&quot;)</code></pre>
 <pre><code>## Rows: 72 Columns: 2
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
