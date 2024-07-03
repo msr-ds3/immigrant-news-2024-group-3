@@ -132,7 +132,7 @@ Topics 1+3 for Crime
 Topics 13 for Welfare
 
 ```{r}
-load("topic_model_lite.RData")
+load("data/topic_model_lite.RData")
 ```
 
 Topic Model was given to us
