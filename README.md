@@ -14,4 +14,5 @@ Alternatively, you can use [this link](https://htmlpreview.github.io/?https://gi
 
 ## Files
 `Data_Replication.Rmd`: Replication code in Markdown format
+
 `Data_Replication.html`: Rendered output of our Markdown file
