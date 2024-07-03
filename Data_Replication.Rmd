@@ -1,11 +1,11 @@
 ---
 title: "Data Replication Project"
-Author: "Salma Ghazi, Shana Mandelbaum"
+author: "Salma Ghazi, Shana Mandelbaum"
+date: "2024-06-24"
 output: 
   html_document:
     toc: yes
     code_folding: hide
-date: "2024-06-24"
 ---
 
 ```{r setup, include=FALSE}
@@ -27,9 +27,9 @@ Replicated figure 4, table 3, figures 2 and 3, and table 4 from https://static1.
 ## Download Google Trends Data + Format
 
 ```{r}
-reporting_data <- read_csv("Google_Trends_Immigrant_Reporting.csv") 
-crime_data <- read_csv("Google_Trends_Immigrant_Crime.csv") 
-welfare_data <- read_csv("Google_Trends_Immigrant_Welfare.csv") 
+reporting_data <- read_csv("data/Google_Trends_Immigrant_Reporting.csv") 
+crime_data <- read_csv("data/Google_Trends_Immigrant_Crime.csv") 
+welfare_data <- read_csv("data/Google_Trends_Immigrant_Welfare.csv") 
 
 
 reporting_data <- 
@@ -209,7 +209,7 @@ stargazer(table_4_model, type = "text")
 This model does include the daily data
 
 ```{r}
-daily_info <- read_csv("gt_report_daily.csv")
+daily_info <- read_csv("data/gt_report_daily.csv")
 
 Segment_Info_Daily <- 
   document_topics %>%
@@ -230,7 +230,7 @@ We are looking at the correlation between media coverage of the Mexican border c
 
 ## Download Border Data
 ```{r}
-border_migrant_data <- read_csv("border_migrant_data.csv")
+border_migrant_data <- read_csv("data/border_migrant_data.csv")
 ```
 ## Graph Border Apprehensions Over Time
 ```{r}
