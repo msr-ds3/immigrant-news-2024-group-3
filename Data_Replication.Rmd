@@ -23,6 +23,7 @@ theme_set(theme_bw())
 Replicated figure 4, table 3, figures 2 and 3, and table 4 from https://static1.squarespace.com/static/5ac4569925bf02b3f05a651f/t/638b509cb141756009541e29/1670074524751/Immigration_Paper_V2-1.pdf using only google trends data (without the bing portion)
 
 # Replication
+This paper studies the effect that the media has on people looking for ways to report immigrants (through their internet searches) 
 
 ## Download Google Trends Data + Format
 
@@ -73,6 +74,10 @@ welfare_data <-
 
 
 ## Figure 4
+Figure 4 in the paper shows the search interest generated on Google trends about immigration reporting, as well as people searching about immigration in relation to welfare and crime. 
+We see that during the Trump presidency, these numbers were usually higher than during the Bush and Obama administrations. 
+The paper goes on to analyze media interest before and during the Trump administration to see if a correlation exists between higher reporting searches and media cues.
+
 ```{r}
 reporting_data %>%
   ggplot(aes(x = date, y = search_interest, color = President)) +
@@ -97,6 +102,7 @@ welfare_data %>%
 ```
 
 ## Table 3 
+Table 3 is a regression that seeks to see the effects of the date and presidential administration on reporting, crime, and welfare search interest. The results we obtain show that Trump's presidency produced significant effects on search interest. 
 
 ```{r}
 reporting_data <- 
@@ -127,9 +133,9 @@ We obtained different results than the paper due to differences in our data down
 When given the exact data the paper used, we obtained their results
 
 ## Figures 2+3
-
-Topics 1+3 for Crime
-Topics 13 for Welfare
+Figure 2 plots the total number of news segments regarding the topic of immigration on three news channels across three time periods - pre campaign, campaign, and post inauguration (Trump).
+Figure 3 uses topics one and three from the topic model which focus on crime and topic 13 which focused on welfare to plot the proportion of segments that focused on these specific topics on the same three channels during the same time period.
+The media focused more on the topics of immigration post inauguration, evidently because this was a key part of President Trump's policy. We can also see that more conservative media, such as fox news, focused on the topic of immigration more than cnn and msnbc.
 
 ```{r}
 load("data/topic_model_lite.RData")
@@ -189,6 +195,8 @@ document_topics %>%
 
 ## Table 4
 
+In table 4, we run a regression to see if the number of news segments focusing on immigration (as well as the specific border and crime proportions), Trump's presidency and the month have a significant effect on the search interest. We see that Trump's presidency and the number of segments have a significant effect on the reporting search interest.
+
 this model does not include the daily data
 
 ```{r}
@@ -206,6 +214,7 @@ table_4_model <- lm(search_interest ~ num_segments + welfare_prop + crime_prop +
 stargazer(table_4_model, type = "text")
 ```
 
+Adjusting for the daily data, we obtain the same result that the Trump administration and the number of news segments surrounding the topic of immigration have a significant effect on the reporting search interest. We can now also see that the reporting search interest and the border and crime proportions have a positive correlation.
 This model does include the daily data
 
 ```{r}
@@ -233,6 +242,8 @@ We are looking at the correlation between media coverage of the Mexican border c
 border_migrant_data <- read_csv("data/border_migrant_data.csv")
 ```
 ## Graph Border Apprehensions Over Time
+
+This graph shows the amount of people apprehended at the border during both the Trump and Obama administrations. 
 ```{r}
 border_migrant_data <- border_migrant_data %>%  
   mutate(date = parse_date(Date, "%Y-%m")) %>% 
@@ -247,7 +258,9 @@ border_migrant_data %>%
 
 ## Media Coverage Graph
 
-We are looking at Topic 6 as this is the topic that discusses the Mexican border crisis.
+We graph the same media coverage graph as before, but looking at Topic 6 as this is the topic that discusses the Mexican border crisis.
+We obtain similar results to the above graphs: the border proportion goes up during the Trump administration and fox news discusses it the most.
+We can conclude from this that during the Trump administration the number of people being apprehended and expelled at the border increased, as did media coverage of the Mexican border crisis
 
 ```{r}
 document_topics %>% 
@@ -262,9 +275,8 @@ document_topics %>%
   labs(x = "Date", y = "Border Proportion")
 ```
 
-We can conclude from this that during the Trump administration the number of people being apprehended and expelled at the border increased, as did media coverage of the Mexican border crisis
-
 ## Graphs Mapped Together
+We expected to see an obvious correlation between the number of migrants apprehended at the border and media coverage, but it seems to be the opposite.
 
 ```{r}
 migrant_plot_data <- border_migrant_data %>% 
@@ -301,11 +313,12 @@ ggplot() +
     axis.ticks.y.right = element_line(color = "blue"))
 ```
 
-We expected to see an obvious correlation between the number of migrants apprehended at the border and media coverage, but it seems to be the opposite.
 
 ## Regression
 
 We did a regression to see if the proportion of times the border crisis was mentioned on the number of immigrants being apprehended on the border and the presidential administration.
+Although we expected the number of immigrants apprehended at the border to have a larger effect than it did on the proportion of times the media discussed immigration at the border, this was not present in our regression.
+However, we see that the Trump administration has a significant effect, and the number of people apprehended at the border and the border proportion does seem to have a positive correlation.
 
 ```{r}
 migrant_model_info <- document_topics %>% 
@@ -320,5 +333,4 @@ migrant_model <- lm(border_prop ~ Is_Trump + Number, data = migrant_model_info)
 stargazer(migrant_model, type = "text", digits = 8)
 ```
 
-Although we expected the number of immigrants apprehended at the border to have a larger effect than it did on the proportion of times the media discussed immigration at the border, this was not present in our regression. 
 
